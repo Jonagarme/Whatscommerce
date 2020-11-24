@@ -1,11 +1,27 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import RutasAutenticadas from "./src/navigations/RutasAutenticadas";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, LogBox } from "react-native";
 import RutasNoAutenticadas from "./src/navigations/RutasNoAutenticadas";
+import SwitchNavigator from "./src/navigations/SwitchNavigator";
+import { validarsesion } from "./src/utils/Acciones";
+import Loading from "./src/components/Loading";
+
+LogBox.ignoreAllLogs(["Animated"]);
 
 export default function App() {
-  return <RutasNoAutenticadas />;
+  const [user, setuser] = useState(false);
+  const [loading, setloading] = useState(false);
+
+  useEffect(() => {
+    setloading(true);
+    validarsesion(setuser);
+    setloading(false);
+  }, []);
+
+  if (loading) {
+    return <Loading isVisible={loading} text="Cargando..." />;
+  }
+
+  return user ? <SwitchNavigator /> : <RutasNoAutenticadas />;
 }
 
 const styles = StyleSheet.create({
