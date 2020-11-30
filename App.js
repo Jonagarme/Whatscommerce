@@ -14,7 +14,11 @@ if (!global.atob) {
   global.atob = decode;
 }
 
-LogBox.ignoreAllLogs(["Animated", "Setting a timer for a long period of time"]);
+LogBox.ignoreAllLogs([
+  "Animated",
+  "Setting a timer for a long period of time",
+  "Avatar.onAcessoryPress",
+]);
 
 export default function App() {
   const [user, setuser] = useState(false);

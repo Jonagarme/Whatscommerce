@@ -4,6 +4,9 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import "firebase/firestore";
+import uuid from "random-uuid-v4";
+import { map } from "lodash";
+import { convertirFicheroBlob } from "./Utils";
 
 const db = firebase.firestore(firebaseapp);
 //const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
@@ -116,7 +119,7 @@ export const addRegistroEspecifico = async (coleccion, doc, data) => {
   await db
     .collection(coleccion)
     .doc(doc)
-    .set(data /* , { merge: true } */)
+    .set(data, { merge: true })
     .then((response) => {
       resultado.statusreponse = true;
     })
@@ -125,4 +128,39 @@ export const addRegistroEspecifico = async (coleccion, doc, data) => {
     });
 
   return resultado;
+};
+
+export const subirImagenesBatch = async (imagenes, ruta) => {
+  const imagenesurl = [];
+
+  await Promise.all(
+    map(imagenes, async (image) => {
+      const blob = await convertirFicheroBlob(image);
+      const ref = firebase.storage().ref(ruta).child(uuid());
+
+      await ref.put(blob).then(async (result) => {
+        await firebase
+          .storage()
+          .ref(`${ruta}/${result.metadata.name}`)
+          .getDownloadURL()
+          .then((imagenurl) => {
+            imagenesurl.push(imagenurl);
+          });
+      });
+    })
+  );
+
+  return imagenesurl;
+};
+
+export const actualilzarPerfil = async (data) => {
+  let respuesta = false;
+  await firebase
+    .auth()
+    .currentUser.updateProfile(data)
+    .then((response) => {
+      respuesta = true;
+    });
+
+  return respuesta;
 };
