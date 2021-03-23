@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, StatusBar, Image } from "react-native";
 import { Icon, Avatar, Input } from "react-native-elements";
-import { cargarImagenesxAspecto } from "../../utils/Utils";
+import { cargarImagenesxAspecto, validaremail } from "../../utils/Utils";
 import {
   subirImagenesBatch,
   addRegistroEspecifico,
   ObtenerUsuario,
   actualilzarPerfil,
+  enviarconfirmacionphone,
+  reautenticar,
+  actualizaremailfirebase,
 } from "../../utils/Acciones";
 import Loading from "../../components/Loading";
 import InputEditable from "../../components/InputEditable";
 import Modal from "../../components/Modal";
+import CodeInput from "react-native-code-input";
+import FirebaseRecapcha from "../../utils/FirebaseRecapcha";
 
 export default function Perfil() {
   const [imagenperfil, setimagenperfil] = useState("");
@@ -24,6 +29,12 @@ export default function Perfil() {
   const [editableemail, seteditableemail] = useState(false);
   const [editablephone, seteditablephone] = useState(false);
 
+  const [verificationid, setverificationid] = useState("");
+  const [isVisible, setisVisible] = useState(false);
+
+  const recapcha = useRef();
+  //console.log(usuario);
+
   useEffect(() => {
     setimagenperfil(usuario.photoURL);
     const { displayName, phoneNumber, email } = usuario;
@@ -31,7 +42,6 @@ export default function Perfil() {
     setphoneNumber(phoneNumber);
     setemail(email);
   }, []);
-  console.log(usuario);
 
   const onChangeInput = (input, valor) => {
     switch (input) {
@@ -69,9 +79,49 @@ export default function Perfil() {
         console.log(usuario);
         break;
       case "email":
+        if (valor !== usuario.email) {
+          if (validaremail(valor)) {
+            const verification = await enviarconfirmacionphone(
+              phoneNumber,
+              recapcha
+            );
+            if (verification) {
+              setverificationid(verification);
+              setisVisible(true);
+            } else {
+              alert("Ha ocurrido un error en la verificacion");
+              setemail(usuario.email);
+            }
+          }
+        }
         break;
       case "phoneNumber":
         break;
+    }
+  };
+
+  const ConfirmarCodigo = async (verificationid, code) => {
+    setloading(true);
+    const resultado = await reautenticar(verificationid, code);
+    //console.log(resultado);
+
+    if (resultado.statusresponse) {
+      const emailresponse = await actualizaremailfirebase(email);
+      const updateregistro = await addRegistroEspecifico(
+        "Usuarios",
+        usuario.uid,
+        { email: email }
+      );
+
+      console.log(emailresponse);
+      console.log(updateregistro);
+
+      setloading(false);
+      setisVisible(false);
+    } else {
+      alert("Ha ocurrido un error al actualizar el correo");
+      setloading(false);
+      setisVisible(false);
     }
   };
 
@@ -96,6 +146,13 @@ export default function Perfil() {
         seteditablephone={seteditablephone}
         actualizarValor={actualizarValor}
       />
+      <ModalVerification
+        isVisibleModal={isVisible}
+        setisVisibleModal={setisVisible}
+        verificationid={verificationid}
+        ConfirmarCodigo={ConfirmarCodigo}
+      />
+      <FirebaseRecapcha referencia={recapcha} />
       <Loading isVisible={loading} text="Espere por favor" />
     </View>
   );
@@ -203,6 +260,40 @@ function FormDatos(props) {
         actualizarValor={actualizarValor}
       />
     </View>
+  );
+}
+
+function ModalVerification(props) {
+  const {
+    isVisibleModal,
+    setisVisibleModal,
+    ConfirmarCodigo,
+    verificationid,
+  } = props;
+
+  return (
+    <Modal isVisible={isVisibleModal} setIsVisible={setisVisibleModal}>
+      <View style={styles.confirmacion}>
+        <Text style={styles.titulomodal}>Confirmar Código</Text>
+        <Text style={styles.detalle}>
+          Se ha enviado un código de verificación a su número de teléfono
+        </Text>
+        <CodeInput
+          secureTextEntry
+          activeColor="#128c7e"
+          inactiveColor="#128c7e"
+          autoFocus={false}
+          inputPosition="center"
+          size={40}
+          containerStyle={{ marginTop: 30 }}
+          codeInputStyle={{ borderWidth: 1.5 }}
+          codeLength={6}
+          onFulfill={(code) => {
+            ConfirmarCodigo(verificationid, code);
+          }}
+        />
+      </View>
+    </Modal>
   );
 }
 
