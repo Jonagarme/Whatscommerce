@@ -9,16 +9,71 @@ import {
   actualilzarPerfil,
 } from "../../utils/Acciones";
 import Loading from "../../components/Loading";
+import InputEditable from "../../components/InputEditable";
+import Modal from "../../components/Modal";
 
 export default function Perfil() {
   const [imagenperfil, setimagenperfil] = useState("");
   const [loading, setloading] = useState(false);
   const usuario = ObtenerUsuario();
+  const [displayName, setdisplayName] = useState("");
+  const [phoneNumber, setphoneNumber] = useState("");
+  const [email, setemail] = useState("");
+
+  const [editablename, seteditablename] = useState(false);
+  const [editableemail, seteditableemail] = useState(false);
+  const [editablephone, seteditablephone] = useState(false);
 
   useEffect(() => {
     setimagenperfil(usuario.photoURL);
+    const { displayName, phoneNumber, email } = usuario;
+    setdisplayName(displayName);
+    setphoneNumber(phoneNumber);
+    setemail(email);
   }, []);
   console.log(usuario);
+
+  const onChangeInput = (input, valor) => {
+    switch (input) {
+      case "displayName":
+        setdisplayName(valor);
+        break;
+      case "email":
+        setemail(valor);
+        break;
+      case "phoneNumber":
+        setphoneNumber(valor);
+        break;
+    }
+  };
+
+  const obtenerValor = (input) => {
+    switch (input) {
+      case "displayName":
+        return displayName;
+        break;
+      case "email":
+        return email;
+        break;
+      case "phoneNumber":
+        return phoneNumber;
+        break;
+    }
+  };
+
+  const actualizarValor = async (input, valor) => {
+    switch (input) {
+      case "displayName":
+        actualilzarPerfil({ displayName: valor });
+        addRegistroEspecifico("Usuarios", usuario.uid, { displayName: valor });
+        console.log(usuario);
+        break;
+      case "email":
+        break;
+      case "phoneNumber":
+        break;
+    }
+  };
 
   return (
     <View>
@@ -29,6 +84,17 @@ export default function Perfil() {
         imagenperfil={imagenperfil}
         setimagenperfil={setimagenperfil}
         setloading={setloading}
+      />
+      <FormDatos
+        onChangeInput={onChangeInput}
+        obtenerValor={obtenerValor}
+        editableemail={editableemail}
+        editablename={editablename}
+        editablephone={editablephone}
+        seteditableemail={seteditableemail}
+        seteditablename={seteditablename}
+        seteditablephone={seteditablephone}
+        actualizarValor={actualizarValor}
       />
       <Loading isVisible={loading} text="Espere por favor" />
     </View>
@@ -87,6 +153,54 @@ function HeaderAvatar(props) {
         rounded
         showAccessory={true}
         onAccessoryPress={cambiarfoto}
+      />
+    </View>
+  );
+}
+
+function FormDatos(props) {
+  const {
+    onChangeInput,
+    obtenerValor,
+    editableemail,
+    editablename,
+    editablephone,
+    seteditableemail,
+    seteditablename,
+    seteditablephone,
+    actualizarValor,
+  } = props;
+  return (
+    <View>
+      <InputEditable
+        id="displayName"
+        label="Nombre"
+        obtenerValor={obtenerValor}
+        placeholder="Nombre"
+        onChangeInput={onChangeInput}
+        editable={editablename}
+        seteditable={seteditablename}
+        actualizarValor={actualizarValor}
+      />
+      <InputEditable
+        id="email"
+        label="Correo"
+        obtenerValor={obtenerValor}
+        placeholder="ejmplo@ejemplo.com"
+        onChangeInput={onChangeInput}
+        editable={editableemail}
+        seteditable={seteditableemail}
+        actualizarValor={actualizarValor}
+      />
+      <InputEditable
+        id="phoneNumber"
+        label="Telefono"
+        obtenerValor={obtenerValor}
+        placeholder="+00000000"
+        onChangeInput={onChangeInput}
+        editable={editablephone}
+        seteditable={seteditablephone}
+        actualizarValor={actualizarValor}
       />
     </View>
   );
