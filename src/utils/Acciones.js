@@ -194,3 +194,24 @@ export const actualizaremailfirebase = async (email) => {
     .catch((err) => (response.statusresponse = false));
   return response;
 };
+
+export const actualizarTelefono = async (verificationId, code) => {
+  let response = { statusresponse: false };
+  console.log(verificationId);
+  console.log(code);
+
+  const credenciales = new firebase.auth.PhoneAuthProvider.credential(
+    verificationId,
+    code
+  );
+
+  await firebase
+    .auth()
+    .currentUser.updatePhoneNumber(credenciales)
+    .then((resultado) => (response.statusresponse = true))
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return response;
+};
