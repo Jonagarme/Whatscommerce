@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Tienda from "../screens/Tienda/Tienda";
-import AddProducto from "../screens/Tienda/AddProduct";
+//import AddProducto from "../screens/Tienda/AddProduct";
 import Contacto from "../screens/Tienda/Contacto";
 import MensajesList from "../screens/Tienda/MensajesList";
 import Detalle from "../screens/Tienda/Detalle";
@@ -18,7 +18,7 @@ export default function TiendaStack() {
         options={{ headerShown: false }}
       />
 
-      <Stack.Screen
+      {/*  <Stack.Screen
         component={AddProducto}
         name="add-product"
         options={{
@@ -26,7 +26,7 @@ export default function TiendaStack() {
           headerTintColor: "#fff",
           headerStyle: { backgroundColor: "#128C7E" },
         }}
-      />
+      /> */}
 
       <Stack.Screen
         component={Detalle}
