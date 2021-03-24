@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, View, Alert, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import {
   Input,
   Image,
@@ -86,11 +93,26 @@ function SubirImagenes(props) {
   const { imagenes, setimagenes } = props;
 
   const removerimagen = (imagen) => {
-    console.log(imagen);
+    Alert.alert(
+      "Eliminar Imagen",
+      "¿Estás Seguro de que quieres eliminar la imagen ?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: () => {
+            setimagenes(filter(imagenes, (imagenURL) => imagenURL !== imagen));
+          },
+        },
+      ]
+    );
   };
 
   return (
-    <View style={styles.viewimagenes}>
+    <ScrollView style={styles.viewimagenes} horizontal={true}>
       {size(imagenes) < 5 && (
         <Icon
           type="material-community"
@@ -115,7 +137,7 @@ function SubirImagenes(props) {
           }}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }
 
