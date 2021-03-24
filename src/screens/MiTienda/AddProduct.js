@@ -12,6 +12,7 @@ import { map, size, filter, isEmpty } from "lodash";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { cargarImagenesxAspecto } from "../../utils/Utils";
 
 export default function AddProduct() {
   const [titulo, settitulo] = useState("");
@@ -69,6 +70,7 @@ export default function AddProduct() {
         }}
       />
       <Text style={styles.txtlabel}>Cargar Imágenes</Text>
+      <SubirImagenes imagenes={imagenes} setimagenes={setimagenes} />
       <Text style={styles.txtlabel}>Asignar Categoria</Text>
       <Button
         title="Agregar Nuevo Producto"
@@ -77,6 +79,43 @@ export default function AddProduct() {
         //onPress={addProducto}
       />
     </KeyboardAwareScrollView>
+  );
+}
+
+function SubirImagenes(props) {
+  const { imagenes, setimagenes } = props;
+
+  const removerimagen = (imagen) => {
+    console.log(imagen);
+  };
+
+  return (
+    <View style={styles.viewimagenes}>
+      {size(imagenes) < 5 && (
+        <Icon
+          type="material-community"
+          name="plus"
+          color="#7a7a7a"
+          containerStyle={styles.containerIcon}
+          onPress={async () => {
+            const resultado = await cargarImagenesxAspecto([1, 1]);
+            if (resultado.status) {
+              setimagenes([...imagenes, resultado.imagen]);
+            }
+          }}
+        />
+      )}
+      {map(imagenes, (imagen, index) => (
+        <Avatar
+          key={index}
+          style={styles.miniatura}
+          source={{ uri: imagen }}
+          onPress={() => {
+            removerimagen(imagen);
+          }}
+        />
+      ))}
+    </View>
   );
 }
 
