@@ -45,14 +45,36 @@ export default function AddProduct() {
       <Input
         placeholder="Descripcion"
         onChangeText={(text) => setdescripcion(text)}
-        inputStyle={styles.input}
+        inputStyle={styles.textarea}
         errorMessage={errores.descripcion}
+        multiline={true}
       />
       <Input
         placeholder="Precio"
-        onChangeText={(text) => setprecio(text)}
+        onChangeText={(text) => setprecio(parseFloat(text))}
         inputStyle={styles.input}
         errorMessage={errores.precio}
+        keyboardType="number-pad"
+      />
+
+      <Text style={styles.txtlabel}>Calidad del Producto o Servicio</Text>
+
+      <AirbnbRating
+        count={5}
+        reviews={["Baja", "Deficiente", "Normal", "Muy Bueno", "Excelente"]}
+        defaultRating={5}
+        size={35}
+        onFinishRating={(value) => {
+          setrating(value);
+        }}
+      />
+      <Text style={styles.txtlabel}>Cargar Imágenes</Text>
+      <Text style={styles.txtlabel}>Asignar Categoria</Text>
+      <Button
+        title="Agregar Nuevo Producto"
+        buttonStyle={styles.btnaddnew}
+        ref={btnref}
+        //onPress={addProducto}
       />
     </KeyboardAwareScrollView>
   );
