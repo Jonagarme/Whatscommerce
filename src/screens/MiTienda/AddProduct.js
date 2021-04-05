@@ -20,6 +20,11 @@ import { useNavigation } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { cargarImagenesxAspecto } from "../../utils/Utils";
+import {
+  subirImagenesBatch,
+  addRegistro,
+  ObtenerUsuario,
+} from "../../utils/Acciones";
 
 export default function AddProduct() {
   const [titulo, settitulo] = useState("");
@@ -29,7 +34,7 @@ export default function AddProduct() {
   const [categoria, setcategoria] = useState("");
   const [rating, setrating] = useState(5);
   const [errores, seterrores] = useState({});
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const btnref = useRef();
   const navigation = useNavigation();
 
@@ -64,7 +69,51 @@ export default function AddProduct() {
         ]
       );
     } else {
-      console.log("Todo esta listo");
+      setloading(true);
+      const urlimagenes = await subirImagenesBatch(
+        imagenes,
+        "imagenesProductos"
+      );
+      const producto = {
+        titulo,
+        descripcion,
+        precio,
+        usuario: ObtenerUsuario().uid,
+        imagenes: urlimagenes,
+        status: 1,
+        fechacreacion: new Date(),
+        rating,
+        categoria,
+      };
+
+      const registrarproducto = await addRegistro("Productos", producto);
+
+      if (registrarproducto.statusreponse) {
+        setloading(false);
+        Alert.alert(
+          "Registro Exitoso",
+          "El producto se ha registrado correctamente",
+          [
+            {
+              style: "cancel",
+              text: "Aceptar",
+              onPress: () => navigation.navigate("mitienda"),
+            },
+          ]
+        );
+      } else {
+        setloading(false);
+        Alert.alert(
+          "Registro Erroneo",
+          "Ha occurido un error al registrar un producto",
+          [
+            {
+              style: "cancel",
+              text: "Aceptar",
+            },
+          ]
+        );
+      }
     }
   };
 
@@ -121,6 +170,7 @@ export default function AddProduct() {
         ref={btnref}
         onPress={addProducto}
       />
+      <Loading isVisible={loading} text="Favor espere" />
     </KeyboardAwareScrollView>
   );
 }
