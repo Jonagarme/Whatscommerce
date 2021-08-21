@@ -232,3 +232,25 @@ export const addRegistro = async (coleccion, data) => {
 
   return resultado;
 };
+
+export const ListarMisProductos = async () => {
+  let productos = [];
+
+  await db
+    .collection("Productos")
+    .where("usuario", "==", ObtenerUsuario().uid)
+    .where("status", "==", 1)
+    .get()
+    .then((response) => {
+      response.forEach((doc) => {
+        const producto = doc.data();
+        producto.id = doc.id;
+        productos.push(producto);
+      });
+    })
+    .catch((err) => {
+      console.log("error");
+    });
+
+  return productos;
+};

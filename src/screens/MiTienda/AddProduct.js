@@ -34,7 +34,7 @@ export default function AddProduct() {
   const [categoria, setcategoria] = useState("");
   const [rating, setrating] = useState(5);
   const [errores, seterrores] = useState({});
-  const [loading, setloading] = useState(true);
+  const [loading, setloading] = useState(false);
   const btnref = useRef();
   const navigation = useNavigation();
 

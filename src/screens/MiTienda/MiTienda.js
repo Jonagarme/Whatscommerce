@@ -3,8 +3,16 @@ import { StyleSheet, Text, View, FlatList, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
+import { ListarMisProductos } from "../../utils/Acciones";
+
 export default function MiTienda() {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      console.log(await ListarMisProductos());
+    })();
+  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: "center" }}>
