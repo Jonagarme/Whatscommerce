@@ -281,3 +281,24 @@ export const eliminarProducto = async (coleccion, documento) => {
 
   return response;
 };
+
+export const obternerRegistroxID = async (coleccion, documento) => {
+  let response = { statusresponse: false, data: null };
+
+  await db
+    .collection(coleccion)
+    .doc(documento)
+    .get()
+    .then((result) => {
+      const producto = result.data();
+      producto.id = result.id;
+
+      response.data = producto;
+      response.statusresponse = true;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return response;
+};
