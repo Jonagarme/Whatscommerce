@@ -216,13 +216,12 @@ export const actualizarTelefono = async (verificationId, code) => {
   return response;
 };
 
-export const addRegistro = async (coleccion, data) => {
+export const addRegistro = async (colecion, data) => {
   const resultado = { error: "", statusreponse: false };
 
   await db
-    .collection(coleccion)
+    .collection(colecion)
     .add(data)
-    .set(data)
     .then((response) => {
       resultado.statusreponse = true;
     })
@@ -253,4 +252,32 @@ export const ListarMisProductos = async () => {
     });
 
   return productos;
+};
+
+export const actualizarRegistro = async (coleccion, documento, data) => {
+  let response = { statusresponse: false };
+
+  await db
+    .collection(coleccion)
+    .doc(documento)
+    .update(data)
+    .then((result) => (response.statusreponse = true))
+    .catch((err) => console.log(err));
+
+  return response;
+};
+
+export const eliminarProducto = async (coleccion, documento) => {
+  let response = { statusresponse: false };
+
+  await db
+    .collection(coleccion)
+    .doc(documento)
+    .delete()
+    .then((result) => (response.statusresponse = true))
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return response;
 };

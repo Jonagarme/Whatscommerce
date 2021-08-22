@@ -72,7 +72,7 @@ export default function AddProduct() {
       setloading(true);
       const urlimagenes = await subirImagenesBatch(
         imagenes,
-        "imagenesProductos"
+        "ImagenesProductos"
       );
       const producto = {
         titulo,
@@ -103,9 +103,10 @@ export default function AddProduct() {
         );
       } else {
         setloading(false);
+
         Alert.alert(
-          "Registro Erroneo",
-          "Ha occurido un error al registrar un producto",
+          "Registro Fallido",
+          "Ha ocurrido un error al registrar producto",
           [
             {
               style: "cancel",
@@ -129,7 +130,7 @@ export default function AddProduct() {
         }}
       />
       <Input
-        placeholder="Titulo"
+        placeholder="Título"
         onChangeText={(text) => settitulo(text)}
         inputStyle={styles.input}
         errorMessage={errores.titulo}
@@ -146,11 +147,10 @@ export default function AddProduct() {
         onChangeText={(text) => setprecio(parseFloat(text))}
         inputStyle={styles.input}
         errorMessage={errores.precio}
-        keyboardType="number-pad"
+        keyboardType="name-phone-pad"
       />
 
       <Text style={styles.txtlabel}>Calidad del Producto o Servicio</Text>
-
       <AirbnbRating
         count={5}
         reviews={["Baja", "Deficiente", "Normal", "Muy Bueno", "Excelente"]}
@@ -198,7 +198,11 @@ function SubirImagenes(props) {
   };
 
   return (
-    <ScrollView style={styles.viewimagenes} horizontal={true}>
+    <ScrollView
+      style={styles.viewimagenes}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+    >
       {size(imagenes) < 5 && (
         <Icon
           type="material-community"
@@ -207,12 +211,14 @@ function SubirImagenes(props) {
           containerStyle={styles.containerIcon}
           onPress={async () => {
             const resultado = await cargarImagenesxAspecto([1, 1]);
+            console.log(resultado);
             if (resultado.status) {
               setimagenes([...imagenes, resultado.imagen]);
             }
           }}
         />
       )}
+
       {map(imagenes, (imagen, index) => (
         <Avatar
           key={index}
@@ -229,7 +235,6 @@ function SubirImagenes(props) {
 
 function Botonera(props) {
   const { categoria, setcategoria } = props;
-
   return (
     <View style={styles.botonera}>
       <TouchableOpacity
