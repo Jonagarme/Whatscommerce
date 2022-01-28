@@ -302,3 +302,23 @@ export const obternerRegistroxID = async (coleccion, documento) => {
 
   return response;
 };
+
+export const ListarProductos = async () => {
+  const productoslist = [];
+  await db
+    .collection("Productos")
+    .where("status", "==", 1)
+    .get()
+    .then((response) => {
+      response.forEach((doc) => {
+        const producto = doc.data();
+        producto.id = doc.id;
+        productoslist.push(producto);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return productoslist;
+};
